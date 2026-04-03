@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: bookings
+    // Document ID: auto-generated
+    // Fields:
+    //   - name: string (required) - Full name of the person booking
+    //   - email: string (required, email format) - Email address
+    //   - date: string (required, date format) - Event date
+    //   - message: string (required) - Event details
+    //   - createdAt: timestamp (required) - When the booking was created
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          (request.auth.token.email == "xcoder2442@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidBooking(data) {
+      return data.keys().hasAll(['name', 'email', 'date', 'message', 'createdAt']) &&
+        data.keys().hasOnly(['name', 'email', 'date', 'message', 'createdAt']) &&
+        data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+        isValidEmail(data.email) &&
+        data.date is string && data.date.size() > 0 &&
+        data.message is string && data.message.size() > 0 && data.message.size() < 5000 &&
+        data.createdAt is timestamp;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /bookings/{bookingId} {
+      // Allow anyone to create a booking, but validate the data
+      allow create: if isValidBooking(request.resource.data);
+      
+      // Only admins can read, update, or delete bookings
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /users/{userId} {
+      // Only the user can read their own profile, or an admin
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isAdmin());
+      
+      // Only admins can create/update user roles
+      allow create, update: if isAdmin();
+    }
+  }
+}
