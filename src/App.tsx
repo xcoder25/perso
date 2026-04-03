@@ -259,24 +259,10 @@ interface Event {
 const UPCOMING_EVENTS: Event[] = [
   {
     id: 1,
-    title: "Grace & Glory Concert",
-    date: "May 15, 2026",
-    location: "St. Jude's Cathedral, London",
-    description: "An evening of worship and praise featuring new songs from the upcoming album."
-  },
-  {
-    id: 2,
-    title: "Worship Night Live",
-    date: "June 02, 2026",
-    location: "City Hall, Manchester",
-    description: "Join Prince James for a powerful night of spiritual connection."
-  },
-  {
-    id: 3,
-    title: "Gospel Roots Festival",
-    date: "July 12, 2026",
-    location: "Hyde Park, London",
-    description: "A celebration of gospel music heritage."
+    title: "New Album Launching",
+    date: "April 26, 2026",
+    location: "Obot Eyo, Odukpani LGA, Cross River State, Nigeria",
+    description: "Join Prince James for the official launching of his highly anticipated new gospel album. A night of powerful worship and celebration."
   }
 ];
 
@@ -539,8 +525,9 @@ const EventsSection = () => {
               <div className="md:w-64 text-stone-400 text-xs sm:text-sm leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
                 {event.description}
               </div>
-              <button className="w-full md:w-auto bg-white text-stone-900 px-6 sm:px-8 py-3 rounded-full font-bold text-xs sm:text-sm hover:bg-gold-400 transition-colors whitespace-nowrap shadow-lg">
-                Get Tickets
+              <button className="w-full md:w-auto bg-white text-stone-900 px-6 sm:px-8 py-3 rounded-full font-bold text-xs sm:text-sm hover:bg-gold-400 transition-colors whitespace-nowrap shadow-lg flex items-center justify-center gap-2">
+                <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
+                Stream Live
               </button>
             </motion.div>
           ))}
@@ -552,9 +539,32 @@ const EventsSection = () => {
 
 const StreamSection = () => {
   const platforms = [
-    { name: 'Audiomack', icon: <Music size={20} />, color: 'bg-[#FFA200]', href: 'https://audiomack.com' },
-    { name: 'Boomplay', icon: <Headphones size={20} />, color: 'bg-[#0d0d0d]', href: 'https://www.boomplay.com' },
-    { name: 'YouTube', icon: <Youtube size={20} />, color: 'bg-[#FF0000]', href: 'https://youtube.com' },
+    { 
+      name: 'Audiomack', 
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4 13h-2v-4h2v4zm-3 2h-2V7h2v10zm-3-2H8v-4h2v4z"/>
+        </svg>
+      ), 
+      color: 'bg-[#FFA200]', 
+      href: 'https://audiomack.com' 
+    },
+    { 
+      name: 'Boomplay', 
+      icon: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
+      ), 
+      color: 'bg-[#00A0E9]', 
+      href: 'https://www.boomplay.com' 
+    },
+    { 
+      name: 'YouTube', 
+      icon: <Youtube size={20} />, 
+      color: 'bg-[#FF0000]', 
+      href: 'https://youtube.com' 
+    },
   ];
 
   return (
