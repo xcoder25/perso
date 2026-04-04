@@ -30,6 +30,7 @@ import {
 import { db, auth, handleFirestoreError, OperationType, googleProvider } from './firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { onAuthStateChanged, signInAnonymously, signInWithPopup, signOut } from 'firebase/auth';
+import princeJamesImage from './assets/pj.jpeg';
 
 // --- Error Boundary ---
 interface ErrorBoundaryProps {
@@ -376,7 +377,7 @@ const Hero = () => {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/pj.jpeg" 
+          src={princeJamesImage} 
           alt="Prince James Performing" 
           className="w-full h-full object-cover brightness-50"
           referrerPolicy="no-referrer"
@@ -438,7 +439,7 @@ const About = () => {
           >
             <div className="aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl">
               <img 
-                src="/pj.jpeg" 
+                src={princeJamesImage} 
                 alt="Prince James Portrait" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
