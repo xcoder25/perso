@@ -75,7 +75,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all text-white"
+          className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all text-white"
         >
           <X size={16} />
         </button>
@@ -250,7 +250,7 @@ export const DonateModal = ({ onClose }: { onClose: () => void }) => {
         
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all text-white"
+          className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all text-white"
         >
           <X size={16} />
         </button>

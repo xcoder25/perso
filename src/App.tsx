@@ -1047,7 +1047,7 @@ const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: 
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-all text-white"
+          className="absolute top-4 right-4 z-50 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-all text-white"
           aria-label="Close"
         >
           <X size={16} />
