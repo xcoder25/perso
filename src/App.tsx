@@ -1,6 +1,6 @@
 import React, { useState, useEffect, FormEvent, ReactNode, Component, ErrorInfo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
+import {
   Calendar, 
   Mail, 
   Instagram, 
@@ -32,6 +32,7 @@ import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, delete
 import { onAuthStateChanged, signInAnonymously, signInWithPopup, signOut } from 'firebase/auth';
 // Image path from public folder
 const princeJamesImage = '/pj.jpeg';
+import { TicketModal } from './Ticketing';
 
 
 // --- Error Boundary ---
@@ -788,7 +789,7 @@ const BookingSection = () => {
   );
 };
 
-const AlbumLaunchAdvert = () => {
+const AlbumLaunchAdvert = ({ onBuyTicket }: { onBuyTicket: () => void }) => {
   // Simple Countdown Logic
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -859,6 +860,7 @@ const AlbumLaunchAdvert = () => {
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={onBuyTicket}
                 className="gold-button bg-gold-600 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest text-xs shadow-2xl shadow-gold-600/20"
               >
                 Join the Launch • April 26
@@ -963,7 +965,7 @@ const Footer = ({ onAdminClick }: { onAdminClick?: () => void }) => {
 };
 
 // --- Popout Ad ---
-const PopoutAd = ({ onClose }: { onClose: () => void }) => {
+const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: () => void }) => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
@@ -1060,13 +1062,15 @@ const PopoutAd = ({ onClose }: { onClose: () => void }) => {
           </div>
 
           {/* CTA */}
-          <a
-            href="#booking"
-            onClick={onClose}
+          <button
+            onClick={() => {
+              onClose();
+              onBuyTicket();
+            }}
             className="gold-button block w-full text-center bg-gold-600 hover:bg-gold-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-gold-900/30 transition-all hover:-translate-y-1"
           >
             Book Your Spot Now
-          </a>
+          </button>
 
           <button
             onClick={onClose}
@@ -1084,6 +1088,7 @@ export default function App() {
   const [isAdminView, setIsAdminView] = useState(window.location.hash === '#admin');
   const [user, setUser] = useState<any>(null);
   const [showAd, setShowAd] = useState(false);
+  const [showTicketModal, setShowTicketModal] = useState(false);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -1141,7 +1146,7 @@ export default function App() {
         <Navbar />
         <main>
           <Hero />
-          <AlbumLaunchAdvert />
+          <AlbumLaunchAdvert onBuyTicket={() => setShowTicketModal(true)} />
           <About />
           <EventsSection />
           <StreamSection />
@@ -1151,7 +1156,12 @@ export default function App() {
 
         {/* Popout Ad */}
         <AnimatePresence>
-          {showAd && <PopoutAd onClose={() => setShowAd(false)} />}
+          {showAd && <PopoutAd onClose={() => setShowAd(false)} onBuyTicket={() => setShowTicketModal(true)} />}
+        </AnimatePresence>
+        
+        {/* Ticketing Modal */}
+        <AnimatePresence>
+          {showTicketModal && <TicketModal onClose={() => setShowTicketModal(false)} />}
         </AnimatePresence>
       </div>
     </ErrorBoundary>

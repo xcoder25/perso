@@ -64,5 +64,11 @@ service cloud.firestore {
       // Only admins can create/update user roles
       allow create, update: if isAdmin();
     }
+
+    match /tickets/{ticketId} {
+      // Anyone can create a ticket upon successful payment
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }
