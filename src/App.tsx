@@ -32,7 +32,7 @@ import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, delete
 import { onAuthStateChanged, signInAnonymously, signInWithPopup, signOut } from 'firebase/auth';
 // Image path from public folder
 const princeJamesImage = '/pj.jpeg';
-import { TicketModal } from './Ticketing';
+import { TicketModal, DonateModal } from './Ticketing';
 
 
 // --- Error Boundary ---
@@ -272,7 +272,7 @@ const UPCOMING_EVENTS: Event[] = [
 
 // --- Components ---
 
-const Navbar = () => {
+const Navbar = ({ onDonateClick }: { onDonateClick: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -316,14 +316,22 @@ const Navbar = () => {
               {link.name}
             </motion.a>
           ))}
-          <motion.a 
-            href="#booking"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className={`px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${scrolled ? 'bg-gold-600 text-white hover:bg-gold-700 shadow-lg shadow-gold-600/20' : 'bg-white text-stone-900 hover:bg-gold-400 hover:text-white'}`}
-          >
-            Book Now
-          </motion.a>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onDonateClick}
+              className={`text-[11px] font-black tracking-widest uppercase flex justify-center items-center gap-1 transition-all hover:scale-110 active:scale-95 ${scrolled ? 'text-gold-600 hover:text-gold-500' : 'text-gold-300 hover:text-white'}`}
+            >
+               <Heart size={14} className={scrolled ? "" : "opacity-80"} /> Support
+            </button>
+            <motion.a 
+              href="#booking"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className={`px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${scrolled ? 'bg-gold-600 text-white hover:bg-gold-700 shadow-lg shadow-gold-600/20' : 'bg-white text-stone-900 hover:bg-gold-400 hover:text-white'}`}
+            >
+              Book Now
+            </motion.a>
+          </div>
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -373,6 +381,20 @@ const Navbar = () => {
                     <ChevronRight size={24} className="text-gold-500" />
                   </motion.a>
                 ))}
+                
+                <motion.button
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 }}
+                  onClick={() => {
+                    setIsOpen(false);
+                    onDonateClick();
+                  }}
+                  className="text-gold-600 text-4xl font-serif flex justify-between items-center group active:text-gold-700 transition-colors"
+                >
+                  Give / Support
+                  <Heart size={24} className="text-gold-500" />
+                </motion.button>
               </div>
 
               <div className="pt-12 border-t border-stone-100">
@@ -789,7 +811,7 @@ const BookingSection = () => {
   );
 };
 
-const AlbumLaunchAdvert = ({ onBuyTicket }: { onBuyTicket: () => void }) => {
+const AlbumLaunchAdvert = ({ onBuyTicket, onDonateClick }: { onBuyTicket: () => void, onDonateClick: () => void }) => {
   // Simple Countdown Logic
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
@@ -857,15 +879,25 @@ const AlbumLaunchAdvert = ({ onBuyTicket }: { onBuyTicket: () => void }) => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-6">
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={onBuyTicket}
-                className="gold-button bg-gold-600 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest text-xs shadow-2xl shadow-gold-600/20"
-              >
-                Join the Launch • April 26
-              </motion.button>
-              <div className="flex items-center gap-4 text-white/60">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onBuyTicket}
+                  className="gold-button bg-gold-600 text-white px-8 py-5 rounded-[2rem] font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-2xl shadow-gold-600/20"
+                >
+                  Join the Launch • April 26
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onDonateClick}
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-8 py-5 rounded-[2rem] font-black uppercase tracking-widest text-[10px] sm:text-xs shadow-2xl transition-colors flex items-center justify-center gap-2"
+                >
+                  <Heart size={14} className="text-gold-400" /> Support
+                </motion.button>
+              </div>
+              <div className="flex items-center gap-4 text-white/60 mt-4 sm:mt-0">
                 <div className="flex -space-x-4">
                   {[1, 2, 3].map(i => (
                     <div key={i} className="w-10 h-10 rounded-full border-2 border-stone-950 bg-stone-800 flex items-center justify-center overflow-hidden">
@@ -1089,6 +1121,7 @@ export default function App() {
   const [user, setUser] = useState<any>(null);
   const [showAd, setShowAd] = useState(false);
   const [showTicketModal, setShowTicketModal] = useState(false);
+  const [showDonateModal, setShowDonateModal] = useState(false);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -1143,10 +1176,13 @@ export default function App() {
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-stone-50 selection:bg-gold-200 selection:text-gold-900">
-        <Navbar />
+        <Navbar onDonateClick={() => setShowDonateModal(true)} />
         <main>
           <Hero />
-          <AlbumLaunchAdvert onBuyTicket={() => setShowTicketModal(true)} />
+          <AlbumLaunchAdvert 
+            onBuyTicket={() => setShowTicketModal(true)} 
+            onDonateClick={() => setShowDonateModal(true)} 
+          />
           <About />
           <EventsSection />
           <StreamSection />
@@ -1162,6 +1198,11 @@ export default function App() {
         {/* Ticketing Modal */}
         <AnimatePresence>
           {showTicketModal && <TicketModal onClose={() => setShowTicketModal(false)} />}
+        </AnimatePresence>
+
+        {/* Donating Modal */}
+        <AnimatePresence>
+          {showDonateModal && <DonateModal onClose={() => setShowDonateModal(false)} />}
         </AnimatePresence>
       </div>
     </ErrorBoundary>
