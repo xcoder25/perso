@@ -263,7 +263,7 @@ const UPCOMING_EVENTS: Event[] = [
     title: "New Album Launching",
     date: "April 26, 2026",
     location: "Obot Eyo, Odukpani LGA, Cross River State, Nigeria",
-    description: "Join Prince James for the official launching of his highly anticipated new gospel album. A night of powerful worship and celebration."
+    description: "Join Minister James for the official launching of his highly anticipated new gospel album. A night of powerful worship and celebration."
   }
 ];
 
@@ -287,28 +287,44 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-5'}`}>
+    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-xl shadow-lg py-3 border-b border-stone-100' : 'bg-transparent py-5'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-between items-center">
-        <a href="#home" className={`text-xl sm:text-2xl font-serif font-bold tracking-tighter transition-colors ${scrolled ? 'text-gold-800' : 'text-white'}`}>
-          PRINCE JAMES
-        </a>
+        <motion.a 
+          href="#home" 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className={`text-2xl sm:text-3xl font-serif font-black tracking-tighter transition-colors ${scrolled ? 'text-gold-800' : 'text-white'}`}
+        >
+          MINISTER <span className="text-gold-500 italic">JAMES</span>
+        </motion.a>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex space-x-8">
-          {navLinks.map((link) => (
-            <a 
+        <div className="hidden md:flex items-center space-x-10">
+          {navLinks.map((link, idx) => (
+            <motion.a 
               key={link.name} 
               href={link.href} 
-              className={`text-sm font-medium tracking-wide uppercase hover:text-gold-500 transition-colors ${scrolled ? 'text-stone-700' : 'text-white'}`}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className={`text-[11px] font-black tracking-widest uppercase hover:text-gold-500 transition-all hover:scale-110 active:scale-95 ${scrolled ? 'text-stone-700' : 'text-white'}`}
             >
               {link.name}
-            </a>
+            </motion.a>
           ))}
+          <motion.a 
+            href="#booking"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={`px-6 py-2 rounded-full font-black text-[10px] uppercase tracking-widest transition-all ${scrolled ? 'bg-gold-600 text-white hover:bg-gold-700 shadow-lg shadow-gold-600/20' : 'bg-white text-stone-900 hover:bg-gold-400 hover:text-white'}`}
+          >
+            Book Now
+          </motion.a>
         </div>
 
         {/* Mobile Menu Toggle */}
         <button 
-          className="md:hidden p-2 -mr-2 transition-colors" 
+          className="md:hidden p-2 -mr-2 transition-transform active:scale-90" 
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
         >
@@ -332,7 +348,7 @@ const Navbar = () => {
           >
             <div className="p-6 flex flex-col h-full">
               <div className="flex justify-between items-center mb-12">
-                <span className="text-xl font-serif font-bold tracking-tighter text-gold-800">PRINCE JAMES</span>
+                <span className="text-xl font-serif font-bold tracking-tighter text-gold-800">MINISTER JAMES</span>
                 <button onClick={() => setIsOpen(false)} className="p-2 text-stone-900">
                   <X size={32} />
                 </button>
@@ -378,38 +394,45 @@ const Hero = () => {
       <div className="absolute inset-0 z-0">
         <img 
           src={princeJamesImage} 
-          alt="Prince James Performing" 
+          alt="Minister James Performing" 
           className="w-full h-full object-cover brightness-50"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-stone-950/80"></div>
       </div>
 
-      <div className="relative z-10 text-center px-4 sm:px-6 max-w-4xl">
-        <motion.span 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-gold-400 font-medium tracking-[0.2em] sm:tracking-[0.3em] uppercase text-[10px] sm:text-sm mb-4 block"
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-5xl">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="mb-6 inline-block"
         >
-          Spreading the Word Through Song
-        </motion.span>
+          <span className="text-gold-400 font-black tracking-[0.4em] uppercase text-[9px] sm:text-xs mb-4 block gold-glow">
+            Spreading the Word Through Song
+          </span>
+        </motion.div>
         <motion.h1 
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-5xl sm:text-6xl md:text-8xl font-serif text-white mb-8 leading-[1.1]"
+          className="text-6xl sm:text-7xl md:text-9xl font-serif text-white mb-10 leading-[0.95] tracking-tighter"
         >
-          A Voice of <span className="italic text-gold-200">Hope</span> & Healing
+          A Voice of <br />
+          <span className="italic text-gold-400 gold-glow">Hope</span> & <span className="font-sans font-extralight opacity-80 text-gold-100">Healing</span>
         </motion.h1>
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 px-4 sm:px-0"
+          className="flex flex-col sm:flex-row items-center justify-center gap-6 px-4 sm:px-0"
         >
-          <a href="#booking" className="w-full sm:w-auto bg-gold-600 hover:bg-gold-500 text-white px-8 py-4 rounded-full font-bold transition-all transform hover:scale-105 flex items-center justify-center gap-2 shadow-lg shadow-gold-900/20">
+          <a href="#booking" className="w-full sm:w-auto gold-button bg-gold-600 hover:bg-gold-500 text-white px-10 py-5 rounded-full font-black uppercase tracking-[0.1em] transition-all transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center gap-3 shadow-2xl shadow-gold-900/40">
             Book for Performance
+            <ChevronRight size={18} />
+          </a>
+          <a href="#events" className="w-full sm:w-auto group flex items-center justify-center gap-3 text-white font-bold uppercase tracking-widest text-xs hover:text-gold-300 transition-colors">
+            Upcoming Events <div className="w-10 h-px bg-gold-500/50 group-hover:w-16 transition-all"></div>
           </a>
         </motion.div>
       </div>
@@ -440,14 +463,14 @@ const About = () => {
             <div className="aspect-[4/5] overflow-hidden rounded-3xl shadow-2xl">
               <img 
                 src={princeJamesImage} 
-                alt="Prince James Portrait" 
+                alt="Minister James Portrait" 
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
             </div>
             <div className="absolute -bottom-6 -right-6 bg-gold-600 text-white p-6 sm:p-8 rounded-2xl hidden sm:block max-w-[280px] shadow-2xl">
               <p className="font-serif italic text-lg sm:text-xl mb-2">"Music is the bridge between the soul and the Creator."</p>
-              <p className="text-xs sm:text-sm font-medium opacity-80">— Prince James</p>
+              <p className="text-xs sm:text-sm font-medium opacity-80">— Minister James</p>
             </div>
           </motion.div>
 
@@ -461,10 +484,10 @@ const About = () => {
             <h2 className="text-3xl sm:text-5xl font-serif text-stone-900 mb-6 leading-tight">The Journey of Faith</h2>
             <div className="space-y-6 text-stone-600 leading-relaxed text-base sm:text-lg">
               <p>
-                Born into a family of worshippers, Prince James discovered his calling at the age of seven. What started as a small voice in a local choir has blossomed into a global music career that touches hearts and transforms lives.
+                Born into a family of worshippers, Minister James discovered his calling at the age of seven. What started as a small voice in a local choir has blossomed into a global music career that touches hearts and transforms lives.
               </p>
               <p>
-                His music is more than just melody; it's a testimony of faith and grace. With a unique blend of contemporary gospel, soul, and traditional hymns, Prince James creates an atmosphere where listeners can find peace, strength, and spiritual renewal.
+                His music is more than just melody; it's a testimony of faith and grace. With a unique blend of contemporary gospel, soul, and traditional hymns, Minister James creates an atmosphere where listeners can find peace, strength, and spiritual renewal.
               </p>
             </div>
             <div className="mt-10 grid grid-cols-3 gap-2 sm:gap-8 border-t border-stone-100 pt-10">
@@ -496,40 +519,43 @@ const EventsSection = () => {
           <div>
             <span className="text-gold-500 font-bold uppercase tracking-widest text-xs mb-3 block">Live Experience</span>
             <h2 className="text-3xl sm:text-5xl font-serif mb-4">Upcoming Performances</h2>
-            <p className="text-stone-400 max-w-xl text-sm sm:text-base">Join Prince James for an experience of worship and connection at these upcoming locations.</p>
+            <p className="text-stone-400 max-w-xl text-sm sm:text-base">Join Minister James for an experience of worship and connection at these upcoming locations.</p>
           </div>
           <a href="#" className="text-gold-400 font-bold text-sm uppercase tracking-widest flex items-center gap-2 hover:text-gold-300 transition-colors">
             View All Dates <ChevronRight size={16} />
           </a>
         </div>
 
-        <div className="space-y-4 sm:space-y-6">
-          {UPCOMING_EVENTS.map((event) => (
+        <div className="grid gap-6">
+          {UPCOMING_EVENTS.map((event, idx) => (
             <motion.div 
               key={event.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, x: idx % 2 === 0 ? -30 : 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="group bg-white/5 border border-white/10 p-5 sm:p-8 rounded-2xl sm:rounded-3xl hover:bg-white/10 transition-all flex flex-col md:flex-row md:items-center gap-4 sm:gap-8"
+              transition={{ duration: 0.6, delay: idx * 0.1 }}
+              className="group glass-dark p-6 sm:p-10 rounded-[2rem] hover:bg-white/10 transition-all flex flex-col md:flex-row md:items-center gap-6 sm:gap-10 border border-white/10"
             >
-              <div className="md:w-48 border-l-2 border-gold-600 pl-4 md:border-l-0 md:pl-0">
-                <p className="text-gold-400 font-serif text-lg sm:text-2xl mb-1">{event.date.split(',')[0]}</p>
-                <p className="text-stone-500 text-[9px] sm:text-xs uppercase tracking-widest font-bold">{event.date.split(',')[1]}</p>
+              <div className="md:w-40 shrink-0">
+                <div className="text-gold-500 font-serif text-3xl sm:text-5xl mb-1 leading-none">{event.date.split(',')[0].split(' ')[1]}</div>
+                <div className="text-stone-400 text-[10px] sm:text-xs uppercase tracking-[0.3em] font-black">{event.date.split(',')[0].split(' ')[0]} {event.date.split(',')[1]}</div>
               </div>
               <div className="flex-grow">
-                <h3 className="text-lg sm:text-2xl font-serif mb-1 sm:mb-2 group-hover:text-gold-300 transition-colors">{event.title}</h3>
-                <div className="flex items-center gap-2 text-stone-400 text-[11px] sm:text-sm">
-                  <MapPin size={12} className="text-gold-600 sm:w-3.5 sm:h-3.5" />
+                <h3 className="text-xl sm:text-3xl font-serif mb-3 group-hover:text-gold-400 transition-colors tracking-tight">{event.title}</h3>
+                <div className="flex items-center gap-3 text-stone-400 text-xs sm:text-sm bg-white/5 w-fit px-4 py-2 rounded-full border border-white/5">
+                  <MapPin size={14} className="text-gold-500" />
                   {event.location}
                 </div>
               </div>
-              <div className="md:w-64 text-stone-400 text-xs sm:text-sm leading-relaxed opacity-80 group-hover:opacity-100 transition-opacity">
-                {event.description}
+              <div className="md:w-72 text-stone-400 text-xs sm:text-sm leading-relaxed opacity-70 group-hover:opacity-100 transition-opacity italic">
+                "{event.description}"
               </div>
-              <button className="w-full md:w-auto bg-white text-stone-900 px-6 sm:px-8 py-3 rounded-full font-bold text-xs sm:text-sm hover:bg-gold-400 transition-colors whitespace-nowrap shadow-lg flex items-center justify-center gap-2">
-                <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
-                Stream Live
-              </button>
+              <div className="shrink-0">
+                <button className="w-full md:w-auto gold-button bg-white text-stone-900 px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-gold-500 hover:text-white transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95">
+                  <span className="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
+                  Tickets & Info
+                </button>
+              </div>
             </motion.div>
           ))}
         </div>
@@ -577,27 +603,34 @@ const StreamSection = () => {
           viewport={{ once: true }}
         >
           <h2 className="text-3xl sm:text-4xl font-serif text-stone-900 mb-4">Stream the Music</h2>
-          <p className="text-stone-600 mb-10 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">Experience the uplifting sounds of Prince James on your favorite platforms.</p>
+          <p className="text-stone-600 mb-10 sm:mb-12 max-w-2xl mx-auto text-sm sm:text-base">Experience the uplifting sounds of Minister James on your favorite platforms.</p>
           
-          <div className="grid grid-cols-1 sm:flex sm:flex-wrap justify-center gap-4 sm:gap-6">
+          <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
             {platforms.map((p, idx) => (
               <motion.a 
                 key={p.name}
                 href={p.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className={`${p.color} text-white px-6 sm:px-8 py-4 rounded-2xl font-bold flex items-center justify-center gap-3 transition-all hover:scale-105 shadow-lg hover:shadow-xl`}
+                whileHover={{ y: -10, scale: 1.05 }}
+                className={`${p.color} text-white px-8 py-5 rounded-[2rem] font-bold flex items-center justify-center gap-4 transition-all shadow-xl hover:shadow-2xl active:scale-95`}
               >
-                {p.icon} 
-                <span className="tracking-wide uppercase text-xs sm:text-sm">{p.name}</span>
+                <span className="p-2 bg-white/20 rounded-full">{p.icon}</span>
+                <span className="tracking-[0.2em] uppercase text-[10px] sm:text-xs font-black">{p.name}</span>
               </motion.a>
             ))}
           </div>
-          <p className="mt-8 sm:mt-10 text-stone-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest">Available on all major platforms</p>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="mt-12 text-stone-400 text-[10px] sm:text-xs font-black uppercase tracking-[0.4em]"
+          >
+            Available on all major platforms
+          </motion.p>
         </motion.div>
       </div>
     </section>
@@ -645,7 +678,7 @@ const BookingSection = () => {
               <span className="text-gold-300 font-bold uppercase tracking-widest text-[10px] sm:text-xs mb-4 block">Get in Touch</span>
               <h2 className="text-3xl sm:text-4xl font-serif mb-6">Booking & Inquiries</h2>
               <p className="text-gold-100 mb-10 text-base sm:text-lg leading-relaxed opacity-90">
-                Interested in having Prince James perform at your event? Please fill out the form, and our team will get back to you within 48 hours.
+                Interested in having Minister James perform at your event? Please fill out the form, and our team will get back to you within 48 hours.
               </p>
               
               <div className="space-y-5 sm:space-y-8">
@@ -758,7 +791,7 @@ const Footer = ({ onAdminClick }: { onAdminClick?: () => void }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col md:flex-row justify-between items-center gap-12 border-b border-white/5 pb-16 mb-12">
           <div className="text-center md:text-left">
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tighter mb-3">PRINCE JAMES</h2>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold tracking-tighter mb-3">MINISTER JAMES</h2>
             <p className="text-stone-500 text-[10px] sm:text-xs uppercase tracking-[0.3em] font-bold">Gospel Music Artist</p>
           </div>
           
@@ -776,7 +809,7 @@ const Footer = ({ onAdminClick }: { onAdminClick?: () => void }) => {
         </div>
         
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8 text-stone-600 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-bold text-center md:text-left">
-          <p>© 2026 Prince James Music. All Rights Reserved.</p>
+          <p>© 2026 Minister James Music. All Rights Reserved.</p>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-8 items-center">
             <a href="#" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>

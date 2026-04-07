@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -18,11 +18,54 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
-    @apply bg-stone-50 text-stone-900 font-sans;
+    @apply bg-stone-50 text-stone-900 font-sans antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
   }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-stone-100;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-stone-300 rounded-full hover:bg-gold-400 transition-colors;
+  }
 }
+
+@layer components {
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+  
+  .glass-dark {
+    @apply bg-black/40 backdrop-blur-xl border border-white/5;
+  }
+
+  .gold-glow {
+    text-shadow: 0 0 20px rgba(234, 179, 8, 0.4);
+  }
+
+  .gold-button {
+    @apply relative overflow-hidden transition-all duration-500;
+  }
+
+  .gold-button::after {
+    content: '';
+    @apply absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-30 transition-all duration-700;
+  }
+
+  .gold-button:hover::after {
+    @apply left-full;
+  }
+}
+

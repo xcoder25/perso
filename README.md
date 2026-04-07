@@ -1,20 +1,22 @@
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<h1 style="font-family: serif;">Minister James Portal</h1>
+<p>Official website and booking platform for Minister James.</p>
 </div>
 
-# Run and deploy your AI Studio app
+## Features
 
-This contains everything you need to run your app locally.
+- **Home**: Inspirational gospel music artist landing page.
+- **About**: The journey of faith for Minister James.
+- **Events**: Upcoming live experiences and performances.
+- **Booking**: Inquire about event bookings and management.
+- **Admin**: Internal dashboard for managing inquiries.
 
-View your app in AI Studio: https://ai.studio/apps/7231ffce-60e9-4f0c-a25f-51da82db5265
-
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+## Development
 
 1. Install dependencies:
    `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
+2. Run locally:
    `npm run dev`
+
+---
+© 2026 Minister James Music.
