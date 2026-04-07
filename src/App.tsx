@@ -30,7 +30,9 @@ import {
 import { db, auth, handleFirestoreError, OperationType, googleProvider } from './firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { onAuthStateChanged, signInAnonymously, signInWithPopup, signOut } from 'firebase/auth';
-import princeJamesImage from './assets/pj.jpeg';
+// Image path from public folder
+const princeJamesImage = '/pj.jpeg';
+
 
 // --- Error Boundary ---
 interface ErrorBoundaryProps {
@@ -281,6 +283,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: 'Home', href: '#home' },
+    { name: 'Launch', href: '#launch' },
     { name: 'About', href: '#about' },
     { name: 'Events', href: '#events' },
     { name: 'Booking', href: '#booking' },
@@ -574,7 +577,7 @@ const StreamSection = () => {
         </svg>
       ), 
       color: 'bg-[#FFA200]', 
-      href: 'https://audiomack.com' 
+      href: 'https://audiomack.com/princejames-69d504cb97ab6' 
     },
     { 
       name: 'Boomplay', 
@@ -785,6 +788,139 @@ const BookingSection = () => {
   );
 };
 
+const AlbumLaunchAdvert = () => {
+  // Simple Countdown Logic
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date("April 26, 2026 00:00:00").getTime();
+    
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+      
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <section id="launch" className="py-24 sm:py-32 bg-stone-950 relative overflow-hidden">
+      {/* Aesthetic Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-10">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-gold-600 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-gold-400 rounded-full blur-[100px]"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="order-2 lg:order-1"
+          >
+            <span className="inline-block px-4 py-1.5 rounded-full bg-gold-600/10 border border-gold-600/20 text-gold-500 font-black text-[10px] uppercase tracking-[0.3em] mb-8 shimmer">
+              The Grand Launch
+            </span>
+            <h2 className="text-5xl sm:text-7xl md:text-8xl font-serif text-white mb-8 leading-[0.9] tracking-tighter">
+              A New Chapter <br />
+              <span className="text-gradient italic text-gold-500">of Grace</span>
+            </h2>
+            <p className="text-stone-400 text-lg sm:text-xl mb-8 max-w-xl leading-relaxed">
+              Experience the powerful debut album from Minister James. A journey of faith, healing, and divine connection through music.
+            </p>
+
+            {/* Countdown Display */}
+            <div className="flex gap-4 sm:gap-8 mb-12">
+              {[
+                { label: 'Days', value: timeLeft.days },
+                { label: 'Hrs', value: timeLeft.hours },
+                { label: 'Min', value: timeLeft.minutes },
+                { label: 'Sec', value: timeLeft.seconds },
+              ].map((item) => (
+                <div key={item.label} className="text-center">
+                  <div className="bg-white/5 border border-white/10 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center mb-2">
+                    <span className="text-2xl sm:text-3xl font-serif text-gold-400">{String(item.value).padStart(2, '0')}</span>
+                  </div>
+                  <span className="text-[10px] uppercase tracking-widest text-stone-500 font-bold">{item.label}</span>
+                </div>
+              ))}
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-6">
+              <motion.button 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="gold-button bg-gold-600 text-white px-10 py-5 rounded-[2rem] font-black uppercase tracking-widest text-xs shadow-2xl shadow-gold-600/20"
+              >
+                Join the Launch • April 26
+              </motion.button>
+              <div className="flex items-center gap-4 text-white/60">
+                <div className="flex -space-x-4">
+                  {[1, 2, 3].map(i => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-stone-950 bg-stone-800 flex items-center justify-center overflow-hidden">
+                      <User size={16} />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs font-bold uppercase tracking-widest">
+                  <span className="text-gold-400">2.4k+</span> Fans Attending
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
+            whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1, type: "spring" }}
+            className="order-1 lg:order-2 perspective-1000"
+          >
+            <div className="relative group rotate-y-12 hover:rotate-y-0 transition-all duration-1000">
+              {/* CD Case Mockup Effect */}
+              <div className="absolute -inset-4 bg-gradient-to-tr from-white/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/10 float-animation">
+                <img 
+                  src={princeJamesImage} 
+                  alt="Album Cover" 
+                  className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent"></div>
+                <div className="absolute bottom-10 left-10">
+                  <p className="text-white font-serif text-3xl mb-1">Minister James</p>
+                  <p className="text-gold-500 font-black text-[10px] uppercase tracking-[0.4em]">Self Titled Evolution</p>
+                </div>
+              </div>
+              
+              {/* Floating Badge */}
+              <motion.div 
+                animate={{ rotate: 360 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                className="absolute -top-10 -right-10 w-32 h-32 bg-gold-600 rounded-full p-1 flex items-center justify-center border-4 border-stone-950 shadow-2xl"
+              >
+                <div className="w-full h-full rounded-full border border-white/20 border-dashed active:animate-[spin_20s_linear_infinite] flex items-center justify-center">
+                  <p className="text-white font-black text-[8px] uppercase tracking-[0.2em] text-center">
+                    EXCLUSIVE <br /> PREMIERE
+                  </p>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const Footer = ({ onAdminClick }: { onAdminClick?: () => void }) => {
   return (
     <footer className="bg-stone-950 text-white py-16 sm:py-20">
@@ -826,15 +962,137 @@ const Footer = ({ onAdminClick }: { onAdminClick?: () => void }) => {
   );
 };
 
+// --- Popout Ad ---
+const PopoutAd = ({ onClose }: { onClose: () => void }) => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const targetDate = new Date('April 26, 2026 00:00:00').getTime();
+    const tick = () => {
+      const now = Date.now();
+      const dist = targetDate - now;
+      if (dist <= 0) return;
+      setTimeLeft({
+        days: Math.floor(dist / 86400000),
+        hours: Math.floor((dist % 86400000) / 3600000),
+        minutes: Math.floor((dist % 3600000) / 60000),
+        seconds: Math.floor((dist % 60000) / 1000),
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.85, y: 40, opacity: 0 }}
+        animate={{ scale: 1, y: 0, opacity: 1 }}
+        exit={{ scale: 0.85, y: 40, opacity: 0 }}
+        transition={{ type: 'spring', damping: 22, stiffness: 260 }}
+        className="relative max-w-md w-full overflow-hidden rounded-[2rem] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.8)] border border-white/10"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Background Image Layer */}
+        <div className="absolute inset-0">
+          <img src={princeJamesImage} alt="" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-stone-950/40" />
+        </div>
+
+        {/* Glowing orbs */}
+        <div className="absolute top-0 right-0 w-48 h-48 bg-gold-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-40 h-40 bg-gold-600/10 rounded-full blur-2xl" />
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center transition-all text-white"
+          aria-label="Close"
+        >
+          <X size={16} />
+        </button>
+
+        {/* Content */}
+        <div className="relative z-10 p-8 pt-12">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 bg-gold-600/20 border border-gold-500/30 rounded-full px-4 py-1.5 mb-6">
+            <span className="w-2 h-2 bg-gold-400 rounded-full animate-ping" />
+            <span className="text-gold-400 font-black text-[10px] uppercase tracking-[0.3em]">
+              Live Event — April 26, 2026
+            </span>
+          </div>
+
+          <h2 className="text-4xl sm:text-5xl font-serif text-white mb-2 leading-tight">
+            New Album<br />
+            <span className="text-gold-400 italic">Launching</span> Soon
+          </h2>
+          <p className="text-stone-400 text-sm mb-8 leading-relaxed">
+            Obot Eyo, Odukpani LGA · Cross River State, Nigeria<br />
+            Join Minister James for a night of powerful worship &amp; celebration.
+          </p>
+
+          {/* Countdown */}
+          <div className="grid grid-cols-4 gap-2 mb-8">
+            {[
+              { label: 'Days', value: timeLeft.days },
+              { label: 'Hrs',  value: timeLeft.hours },
+              { label: 'Min',  value: timeLeft.minutes },
+              { label: 'Sec',  value: timeLeft.seconds },
+            ].map(item => (
+              <div key={item.label} className="text-center">
+                <div className="bg-white/5 border border-white/10 rounded-xl py-3 mb-1.5">
+                  <span className="text-2xl font-serif text-gold-400 tabular-nums">
+                    {String(item.value).padStart(2, '0')}
+                  </span>
+                </div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-stone-500">
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <a
+            href="#booking"
+            onClick={onClose}
+            className="gold-button block w-full text-center bg-gold-600 hover:bg-gold-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-gold-900/30 transition-all hover:-translate-y-1"
+          >
+            Book Your Spot Now
+          </a>
+
+          <button
+            onClick={onClose}
+            className="block w-full text-center text-stone-600 text-xs mt-4 hover:text-stone-400 transition-colors"
+          >
+            Remind me later
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
 export default function App() {
   const [isAdminView, setIsAdminView] = useState(window.location.hash === '#admin');
   const [user, setUser] = useState<any>(null);
+  const [showAd, setShowAd] = useState(false);
 
   useEffect(() => {
     const handleHashChange = () => {
       setIsAdminView(window.location.hash === '#admin');
     };
     window.addEventListener('hashchange', handleHashChange);
+
+    // Show ad after 2.5s delay
+    const adTimer = setTimeout(() => setShowAd(true), 2500);
     
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
@@ -845,6 +1103,7 @@ export default function App() {
     
     return () => {
       window.removeEventListener('hashchange', handleHashChange);
+      clearTimeout(adTimer);
       unsubscribe();
     };
   }, []);
@@ -882,12 +1141,18 @@ export default function App() {
         <Navbar />
         <main>
           <Hero />
+          <AlbumLaunchAdvert />
           <About />
           <EventsSection />
           <StreamSection />
           <BookingSection />
         </main>
         <Footer onAdminClick={() => isAdmin ? window.location.hash = 'admin' : handleAdminLogin()} />
+
+        {/* Popout Ad */}
+        <AnimatePresence>
+          {showAd && <PopoutAd onClose={() => setShowAd(false)} />}
+        </AnimatePresence>
       </div>
     </ErrorBoundary>
   );
