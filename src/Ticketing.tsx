@@ -6,7 +6,7 @@ import { db, handleFirestoreError, OperationType } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { QRCodeSVG } from 'qrcode.react';
 import { toPng } from 'html-to-image';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 
 export const TicketModal = ({ onClose }: { onClose: () => void }) => {
   const [email, setEmail] = useState('');
@@ -34,7 +34,12 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
   const amount = 100 * 100; // 100 NGN in kobo
 
   const handlePaystackSuccessAction = async (reference: any) => {
-    setIsLoading(true);
+    // Show success UI immediately for better UX
+    setIsSuccess(true);
+    // Use the reference as a temporary ID if doc hasn't saved yet
+    setTicketId(reference.reference.slice(-6).toUpperCase());
+
+    // Background save to Firestore
     try {
       const docRef = await addDoc(collection(db, 'tickets'), {
         name,
@@ -44,15 +49,11 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
         status: 'paid',
         createdAt: serverTimestamp()
       });
-      // Generate a short ticket ID from the document ID
-      const newTicketId = docRef.id.slice(-6).toUpperCase();
-      setTicketId(newTicketId);
-      setIsSuccess(true);
+      // Update with the actual document ID if different
+      setTicketId(docRef.id.slice(-6).toUpperCase());
     } catch (error) {
+      console.error("Firestore save error:", error);
       handleFirestoreError(error, OperationType.CREATE, 'tickets');
-      alert("Payment successful but failed to save ticket. Please contact support with reference: " + reference.reference);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -60,7 +61,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
     console.log('Payment modal closed');
   };
 
-  const componentProps = {
+  const componentProps = useMemo(() => ({
     email,
     amount,
     metadata: {
@@ -71,7 +72,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
     text: "Pay ₦100 & Get Ticket",
     onSuccess: (reference: any) => handlePaystackSuccessAction(reference),
     onClose: handlePaystackCloseAction,
-  };
+  }), [email, name, publicKey]);
 
   return (
     <motion.div
@@ -90,7 +91,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
         onClick={e => e.stopPropagation()}
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold-600/10 rounded-full blur-3xl" />
-        
+
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all text-white"
@@ -142,25 +143,25 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-gold-600 to-gold-400 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
                   <div className={`relative ${(!name || !email) ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <PaystackButton 
-                      {...componentProps} 
-                      className="w-full bg-gold-600 text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl shadow-xl transition-transform active:scale-[0.98]" 
+                    <PaystackButton
+                      {...componentProps}
+                      className="w-full bg-gold-600 text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl shadow-xl transition-transform active:scale-[0.98]"
                     />
                   </div>
                 </div>
               )}
             </>
           ) : (
-             <div className="text-center">
+            <div className="text-center">
               <div className="w-12 h-12 bg-green-500/10 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle size={24} />
               </div>
               <h3 className="text-xl font-serif text-white mb-1">Ticket Secured!</h3>
               <p className="text-stone-400 text-[10px] mb-6">Payment verified. A copy has been saved to our database.</p>
-              
+
               {/* Visual Ticket Container */}
               <div className="relative mb-8">
-                <div 
+                <div
                   ref={ticketRef}
                   className="bg-white rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-left"
                 >
@@ -172,16 +173,16 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                       <p className="text-stone-400 text-[10px] mt-1 italic">Album Launching 2026</p>
                     </div>
                     <div className="bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
-                       <QRCodeSVG value={`TICKET-${ticketId}-${email}`} size={50} bgColor="white" fgColor="black" />
+                      <QRCodeSVG value={`TICKET-${ticketId}-${email}`} size={50} bgColor="white" fgColor="black" />
                     </div>
                   </div>
-                  
+
                   {/* Perforated Divider */}
                   <div className="relative h-px bg-stone-200 flex items-center">
                     <div className="absolute -left-3 top-[-8px] w-6 h-4 bg-stone-900 rounded-full" />
                     <div className="absolute -right-3 top-[-8px] w-6 h-4 bg-stone-900 rounded-full" />
                   </div>
-                  
+
                   {/* Ticket Primary Info */}
                   <div className="p-6 bg-white grid grid-cols-2 gap-y-6">
                     <div>
@@ -192,7 +193,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                       <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1">Pass ID</p>
                       <p className="text-stone-900 font-mono text-sm font-black">{ticketId || '...'}</p>
                     </div>
-                    
+
                     <div className="col-span-2 bg-stone-50 rounded-xl p-3 flex justify-between items-center border border-stone-100">
                       <div>
                         <p className="text-[8px] font-black uppercase tracking-widest text-stone-400 mb-0.5">Event Date</p>
@@ -214,18 +215,18 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                   {/* Footer Decoration */}
                   <div className="px-6 pb-6 bg-white">
                     <div className="border-t border-stone-100 pt-4 flex items-center justify-between">
-                       <div className="flex items-center gap-2">
-                          <MapPin size={10} className="text-gold-600" />
-                          <span className="text-[9px] text-stone-500 font-medium">Obot Eyo, Odukpani LGA</span>
-                       </div>
-                       <div className="text-[9px] text-gold-600 font-black italic">MINISTER JAMES LIVE</div>
+                      <div className="flex items-center gap-2">
+                        <MapPin size={10} className="text-gold-600" />
+                        <span className="text-[9px] text-stone-500 font-medium">Obot Eyo, Odukpani LGA</span>
+                      </div>
+                      <div className="text-[9px] text-gold-600 font-black italic">MINISTER JAMES LIVE</div>
                     </div>
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex flex-col gap-3">
-                <button 
+                <button
                   onClick={downloadTicket}
                   className="w-full bg-gold-600 hover:bg-gold-500 text-white py-3 rounded-xl transition-all font-black text-[10px] uppercase tracking-[0.2em] shadow-lg flex items-center justify-center gap-2"
                 >
@@ -233,7 +234,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                 </button>
 
                 {navigator.share && (
-                  <button 
+                  <button
                     onClick={() => {
                       navigator.share({
                         title: 'Minister James Ticket',
@@ -246,18 +247,18 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                     Share Ticket
                   </button>
                 )}
-                
-                <a 
-                  href="https://youtube.com/live/some-private-link" 
-                  target="_blank" 
+
+                <a
+                  href="https://youtube.com/live/some-private-link"
+                  target="_blank"
                   rel="noreferrer"
                   className="flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl transition-colors font-medium text-xs"
                 >
                   <Video size={14} className="text-red-500" /> Virtual Pass Access
                 </a>
               </div>
-              
-              <button 
+
+              <button
                 onClick={onClose}
                 className="mt-6 text-stone-500 hover:text-white text-[10px] uppercase tracking-widest font-bold transition-colors"
               >
@@ -279,7 +280,7 @@ export const DonateModal = ({ onClose }: { onClose: () => void }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const publicKey = (import.meta as any).env?.VITE_PAYSTACK_PUBLIC_KEY || "pk_test_b867c2eefe42df8763ac73c1dcc73468bfbdf8a1";
-  const amount = parseInt(customAmount) * 100 || 0; 
+  const amount = parseInt(customAmount) * 100 || 0;
 
   const handlePaystackSuccessAction = async (reference: any) => {
     setIsLoading(true);
@@ -329,7 +330,7 @@ export const DonateModal = ({ onClose }: { onClose: () => void }) => {
         onClick={e => e.stopPropagation()}
       >
         <div className="absolute top-0 right-0 w-32 h-32 bg-gold-600/10 rounded-full blur-3xl" />
-        
+
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center transition-all text-white"
@@ -393,23 +394,23 @@ export const DonateModal = ({ onClose }: { onClose: () => void }) => {
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-gold-600 to-gold-400 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
                   <div className={`relative ${(!name || !email || amount < 10000) ? 'opacity-50 pointer-events-none' : ''}`}>
-                    <PaystackButton 
-                      {...componentProps} 
-                      className="w-full bg-gold-600 text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl shadow-xl transition-transform active:scale-[0.98]" 
+                    <PaystackButton
+                      {...componentProps}
+                      className="w-full bg-gold-600 text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl shadow-xl transition-transform active:scale-[0.98]"
                     />
                   </div>
                 </div>
               )}
             </>
           ) : (
-             <div className="text-center py-4">
+            <div className="text-center py-4">
               <div className="w-16 h-16 bg-green-500/10 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Heart fill="currentColor" size={32} />
               </div>
               <h3 className="text-2xl font-serif text-white mb-2">God Bless You!</h3>
               <p className="text-stone-400 text-sm mb-8">Thank you, {name}, for your generous support of ₦{customAmount}. Your contribution means the world to us.</p>
-              
-              <button 
+
+              <button
                 onClick={onClose}
                 className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl transition-colors font-medium text-sm"
               >

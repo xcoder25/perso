@@ -99,25 +99,38 @@ interface Booking {
   createdAt: Timestamp;
 }
 
+interface TicketRecord {
+  id: string;
+  name: string;
+  email: string;
+  reference: string;
+  status: string;
+  createdAt: Timestamp;
+}
 const AdminDashboard = ({ onLogout, onBack }: { onLogout: () => void, onBack: () => void }) => {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [tickets, setTickets] = useState<TicketRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'bookings' | 'tickets'>('tickets');
 
   useEffect(() => {
-    const q = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Booking[];
-      setBookings(data);
-      setLoading(false);
-    }, (error) => {
-      handleFirestoreError(error, OperationType.GET, 'bookings');
+    const qBookings = query(collection(db, 'bookings'), orderBy('createdAt', 'desc'));
+    const qTickets = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
+
+    const unsubBookings = onSnapshot(qBookings, (snapshot) => {
+      setBookings(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Booking[]);
     });
 
-    return () => unsubscribe();
+    const unsubTickets = onSnapshot(qTickets, (snapshot) => {
+      setTickets(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as TicketRecord[]);
+      setLoading(false);
+    });
+
+    return () => {
+      unsubBookings();
+      unsubTickets();
+    };
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -148,7 +161,20 @@ const AdminDashboard = ({ onLogout, onBack }: { onLogout: () => void, onBack: ()
                 <h1 className="text-2xl sm:text-3xl font-serif text-stone-900">Admin</h1>
                 <ShieldCheck className="text-gold-600 shrink-0" size={20} />
               </div>
-              <p className="text-xs sm:text-sm text-stone-500">Manage bookings</p>
+              <div className="flex gap-4 mt-2">
+                <button 
+                  onClick={() => setActiveTab('tickets')}
+                  className={`text-[10px] uppercase tracking-widest font-black pb-1 border-b-2 transition-all ${activeTab === 'tickets' ? 'border-gold-600 text-stone-900' : 'border-transparent text-stone-400'}`}
+                >
+                  Tickets ({tickets.length})
+                </button>
+                <button 
+                  onClick={() => setActiveTab('bookings')}
+                  className={`text-[10px] uppercase tracking-widest font-black pb-1 border-b-2 transition-all ${activeTab === 'bookings' ? 'border-gold-600 text-stone-900' : 'border-transparent text-stone-400'}`}
+                >
+                  Inquiries ({bookings.length})
+                </button>
+              </div>
             </div>
           </div>
           <div className="flex items-center justify-between w-full md:w-auto gap-4 bg-white/50 p-2 rounded-2xl md:bg-transparent md:p-0">
@@ -168,82 +194,92 @@ const AdminDashboard = ({ onLogout, onBack }: { onLogout: () => void, onBack: ()
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gold-600 mb-4"></div>
-            <p className="text-stone-400 font-serif italic">Loading inquiries...</p>
+            <p className="text-stone-400 font-serif italic">Syncing with server...</p>
           </div>
-        ) : bookings.length === 0 ? (
-          <div className="bg-white rounded-3xl p-20 text-center shadow-sm border border-stone-100">
-            <div className="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Mail className="w-10 h-10 text-stone-200" />
+        ) : activeTab === 'bookings' ? (
+           bookings.length === 0 ? (
+            <div className="bg-white rounded-3xl p-20 text-center shadow-sm border border-stone-100">
+              <div className="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Mail className="w-10 h-10 text-stone-200" />
+              </div>
+              <h3 className="text-xl font-serif text-stone-900 mb-2">No bookings yet</h3>
+              <p className="text-stone-500 max-w-xs mx-auto">When fans or event organizers message you, they'll appear here.</p>
             </div>
-            <h3 className="text-xl font-serif text-stone-900 mb-2">No bookings yet</h3>
-            <p className="text-stone-500 max-w-xs mx-auto">When fans or event organizers message you, they'll appear here.</p>
-          </div>
-        ) : (
-          <div className="grid gap-6">
-            <div className="flex items-center justify-between px-2">
-              <p className="text-sm text-stone-400 font-medium uppercase tracking-widest">
-                Latest Inquiries ({bookings.length})
-              </p>
-            </div>
-            {bookings.map((booking) => (
-              <motion.div 
-                key={booking.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm border border-stone-100 hover:shadow-md transition-all group"
-              >
-                <div className="flex flex-col md:flex-row justify-between gap-4 sm:gap-8">
-                  <div className="flex-grow">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                      <h3 className="text-xl sm:text-2xl font-serif text-stone-900">{booking.name}</h3>
-                      <span className="text-[9px] sm:text-[10px] bg-gold-50 text-gold-700 px-2 sm:px-3 py-1 rounded-full font-black uppercase tracking-[0.2em] border border-gold-100">
-                        {booking.date}
-                      </span>
-                    </div>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6 text-stone-400 text-[11px] sm:text-sm mb-4 sm:mb-6">
-                      <div className="flex items-center gap-2 group-hover:text-stone-600 transition-colors truncate">
-                        <Mail size={14} className="text-gold-500 shrink-0" /> {booking.email}
+          ) : (
+            <div className="grid gap-6">
+              {bookings.map((booking) => (
+                <motion.div 
+                  key={booking.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-white rounded-3xl p-8 shadow-sm border border-stone-100 hover:shadow-md transition-all group"
+                >
+                  <div className="flex justify-between gap-8">
+                    <div className="flex-grow">
+                      <div className="flex items-center gap-3 mb-4">
+                        <h3 className="text-2xl font-serif text-stone-900">{booking.name}</h3>
+                        <span className="text-[10px] bg-gold-50 text-gold-700 px-3 py-1 rounded-full font-black uppercase tracking-[0.2em] border border-gold-100">
+                          {booking.date}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Clock size={14} className="shrink-0" /> {booking.createdAt?.toDate().toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric', 
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                      <div className="flex items-center gap-6 text-stone-400 text-sm mb-6">
+                        <div className="flex items-center gap-2 group-hover:text-stone-600 transition-colors">
+                          <Mail size={14} className="text-gold-500" /> {booking.email}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Clock size={14} /> {booking.createdAt?.toDate().toLocaleDateString()}
+                        </div>
                       </div>
-                    </div>
-                    <div className="relative">
-                      <div className="absolute -left-3 sm:-left-4 top-0 bottom-0 w-1 bg-gold-100 rounded-full"></div>
-                      <p className="text-stone-700 text-sm sm:text-base leading-relaxed whitespace-pre-wrap pl-3 sm:pl-4">
+                      <p className="text-stone-700 leading-relaxed whitespace-pre-wrap pl-4 border-l-2 border-gold-100">
                         {booking.message}
                       </p>
                     </div>
-                  </div>
-                  <div className="flex md:flex-col justify-end items-center gap-2 mt-4 md:mt-0">
                     <button 
-                      onClick={() => {
-                        if (confirm('Delete this inquiry permanently?')) {
-                          handleDelete(booking.id);
-                        }
-                      }}
-                      disabled={deletingId === booking.id}
-                      className="p-3 sm:p-4 text-stone-300 hover:text-red-500 hover:bg-red-50 rounded-xl sm:rounded-2xl transition-all disabled:opacity-50"
-                      title="Delete Inquiry"
+                      onClick={() => confirm('Delete?') && handleDelete(booking.id)}
+                      className="p-4 text-stone-200 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all"
                     >
-                      {deletingId === booking.id ? (
-                        <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-t-2 border-red-500"></div>
-                      ) : (
-                        <Trash2 size={20} className="sm:w-[22px] sm:h-[22px]" />
-                      )}
+                      <Trash2 size={20} />
                     </button>
                   </div>
+                </motion.div>
+              ))}
+            </div>
+          )
+        ) : (
+          tickets.length === 0 ? (
+            <div className="bg-white rounded-3xl p-20 text-center shadow-sm border border-stone-100">
+               <div className="w-20 h-20 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Heart className="w-10 h-10 text-stone-200" />
+              </div>
+              <h3 className="text-xl font-serif text-stone-900 mb-2">No tickets sold yet</h3>
+              <p className="text-stone-500 max-w-xs mx-auto">All successful ticket purchases will be listed here.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4">
+               {tickets.map((ticket) => (
+                <div key={ticket.id} className="bg-white rounded-2xl p-6 border border-stone-100 shadow-sm flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="w-12 h-12 bg-gold-50 rounded-full flex items-center justify-center text-gold-600 font-black text-xs">
+                      {ticket.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-stone-900">{ticket.name}</h4>
+                      <p className="text-xs text-stone-400">{ticket.email}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] uppercase font-black tracking-widest text-stone-300 mb-1">Pass ID</p>
+                    <p className="font-mono text-xs bg-stone-50 px-3 py-1 rounded-lg border border-stone-100">{ticket.id.slice(-6).toUpperCase()}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] uppercase font-black tracking-widest text-stone-300 mb-1">Date Purchased</p>
+                    <p className="text-xs text-stone-600">{ticket.createdAt?.toDate().toLocaleDateString()}</p>
+                  </div>
                 </div>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )
         )}
       </div>
     </div>
