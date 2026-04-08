@@ -537,7 +537,7 @@ const About = () => {
   );
 };
 
-const EventsSection = () => {
+const EventsSection = ({ onBuyTicket }: { onBuyTicket: () => void }) => {
   return (
     <section id="events" className="py-16 sm:py-24 bg-stone-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -577,7 +577,10 @@ const EventsSection = () => {
                 "{event.description}"
               </div>
               <div className="shrink-0">
-                <button className="w-full md:w-auto gold-button bg-white text-stone-900 px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-gold-500 hover:text-white transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95">
+                <button 
+                  onClick={onBuyTicket}
+                  className="w-full md:w-auto gold-button bg-white text-stone-900 px-8 py-4 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-gold-500 hover:text-white transition-all shadow-xl flex items-center justify-center gap-3 active:scale-95"
+                >
                   <span className="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
                   Tickets & Info
                 </button>
@@ -1184,7 +1187,7 @@ export default function App() {
             onDonateClick={() => setShowDonateModal(true)} 
           />
           <About />
-          <EventsSection />
+          <EventsSection onBuyTicket={() => setShowTicketModal(true)} />
           <StreamSection />
           <BookingSection />
         </main>

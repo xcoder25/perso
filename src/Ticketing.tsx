@@ -4,6 +4,9 @@ import { X, CheckCircle, Video, Key, Calendar, MapPin, Heart } from 'lucide-reac
 import { PaystackButton } from 'react-paystack';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { QRCodeSVG } from 'qrcode.react';
+import { toPng } from 'html-to-image';
+import { useRef } from 'react';
 
 export const TicketModal = ({ onClose }: { onClose: () => void }) => {
   const [email, setEmail] = useState('');
@@ -11,6 +14,20 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [ticketId, setTicketId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const ticketRef = useRef<HTMLDivElement>(null);
+
+  const downloadTicket = async () => {
+    if (ticketRef.current === null) return;
+    try {
+      const dataUrl = await toPng(ticketRef.current, { cacheBust: true, backgroundColor: '#0c0a09' });
+      const link = document.createElement('a');
+      link.download = `minister-james-ticket-${ticketId}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Failed to download ticket', err);
+    }
+  };
 
   // Fallback public key for testing since user hasn't provided one
   const publicKey = (import.meta as any).env?.VITE_PAYSTACK_PUBLIC_KEY || "pk_test_b867c2eefe42df8763ac73c1dcc73468bfbdf8a1";
@@ -28,7 +45,8 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
         createdAt: serverTimestamp()
       });
       // Generate a short ticket ID from the document ID
-      setTicketId(docRef.id.slice(-6).toUpperCase());
+      const newTicketId = docRef.id.slice(-6).toUpperCase();
+      setTicketId(newTicketId);
       setIsSuccess(true);
     } catch (error) {
       handleFirestoreError(error, OperationType.CREATE, 'tickets');
@@ -133,51 +151,115 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
               )}
             </>
           ) : (
-             <div className="text-center py-4">
-              <div className="w-16 h-16 bg-green-500/10 text-green-400 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle size={32} />
+             <div className="text-center">
+              <div className="w-12 h-12 bg-green-500/10 text-green-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                <CheckCircle size={24} />
               </div>
-              <h3 className="text-2xl font-serif text-white mb-2">Ticket Secured!</h3>
-              <p className="text-stone-400 text-sm mb-8">Thank you, {name}. Your payment was successful.</p>
+              <h3 className="text-xl font-serif text-white mb-1">Ticket Secured!</h3>
+              <p className="text-stone-400 text-[10px] mb-6">Payment verified. A copy has been saved to our database.</p>
               
-              <div className="bg-stone-950/50 border border-stone-800 rounded-2xl p-5 mb-8 text-left">
-                <div className="flex items-center gap-3 mb-4">
-                  <Key size={16} className="text-gold-500" />
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Ticket ID</p>
-                    <p className="text-white font-mono">{ticketId}</p>
+              {/* Visual Ticket Container */}
+              <div className="relative mb-8">
+                <div 
+                  ref={ticketRef}
+                  className="bg-white rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] text-left"
+                >
+                  {/* Ticket Header */}
+                  <div className="bg-stone-900 p-6 flex justify-between items-center border-b border-stone-800">
+                    <div>
+                      <p className="text-gold-500 font-black text-[9px] uppercase tracking-[0.3em] mb-1">Official Event Pass</p>
+                      <h4 className="text-white font-serif text-xl leading-tight">Minister James</h4>
+                      <p className="text-stone-400 text-[10px] mt-1 italic">Album Launching 2026</p>
+                    </div>
+                    <div className="bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
+                       <QRCodeSVG value={`TICKET-${ticketId}-${email}`} size={50} bgColor="white" fgColor="black" />
+                    </div>
+                  </div>
+                  
+                  {/* Perforated Divider */}
+                  <div className="relative h-px bg-stone-200 flex items-center">
+                    <div className="absolute -left-3 top-[-8px] w-6 h-4 bg-stone-900 rounded-full" />
+                    <div className="absolute -right-3 top-[-8px] w-6 h-4 bg-stone-900 rounded-full" />
+                  </div>
+                  
+                  {/* Ticket Primary Info */}
+                  <div className="p-6 bg-white grid grid-cols-2 gap-y-6">
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1">Guest</p>
+                      <p className="text-stone-900 text-sm font-bold truncate">{name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[9px] font-black uppercase tracking-widest text-stone-400 mb-1">Pass ID</p>
+                      <p className="text-stone-900 font-mono text-sm font-black">{ticketId || '...'}</p>
+                    </div>
+                    
+                    <div className="col-span-2 bg-stone-50 rounded-xl p-3 flex justify-between items-center border border-stone-100">
+                      <div>
+                        <p className="text-[8px] font-black uppercase tracking-widest text-stone-400 mb-0.5">Event Date</p>
+                        <p className="text-stone-800 text-xs font-bold">April 26, 2026</p>
+                      </div>
+                      <div className="w-px h-6 bg-stone-200" />
+                      <div>
+                        <p className="text-[8px] font-black uppercase tracking-widest text-stone-400 mb-0.5">Door Opens</p>
+                        <p className="text-stone-800 text-xs font-bold">4:00 PM</p>
+                      </div>
+                      <div className="w-px h-6 bg-stone-200" />
+                      <div className="text-right">
+                        <p className="text-[8px] font-black uppercase tracking-widest text-stone-400 mb-0.5">Access</p>
+                        <p className="text-stone-800 text-xs font-bold">All Areas</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer Decoration */}
+                  <div className="px-6 pb-6 bg-white">
+                    <div className="border-t border-stone-100 pt-4 flex items-center justify-between">
+                       <div className="flex items-center gap-2">
+                          <MapPin size={10} className="text-gold-600" />
+                          <span className="text-[9px] text-stone-500 font-medium">Obot Eyo, Odukpani LGA</span>
+                       </div>
+                       <div className="text-[9px] text-gold-600 font-black italic">MINISTER JAMES LIVE</div>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <Calendar size={16} className="text-gold-500" />
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Save the Date</p>
-                    <p className="text-white text-sm">April 26, 2026</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 mb-4">
-                  <MapPin size={16} className="text-gold-500" />
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-500">Location</p>
-                    <p className="text-white text-sm">Obot Eyo, Odukpani LGA, Cross River State</p>
-                  </div>
-                </div>
-                <div className="border-t border-stone-800 pt-4 mt-4">
-                  <a 
-                    href="https://youtube.com/live/some-private-link" 
-                    target="_blank" 
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl transition-colors font-medium text-sm"
+              </div>
+              
+              <div className="flex flex-col gap-3">
+                <button 
+                  onClick={downloadTicket}
+                  className="w-full bg-gold-600 hover:bg-gold-500 text-white py-3 rounded-xl transition-all font-black text-[10px] uppercase tracking-[0.2em] shadow-lg flex items-center justify-center gap-2"
+                >
+                  Download Digital Ticket
+                </button>
+
+                {navigator.share && (
+                  <button 
+                    onClick={() => {
+                      navigator.share({
+                        title: 'Minister James Ticket',
+                        text: `My ticket for Minister James Album Launch. Ticket ID: ${ticketId}`,
+                        url: window.location.href
+                      }).catch(console.error);
+                    }}
+                    className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl transition-colors font-medium text-xs flex items-center justify-center gap-2"
                   >
-                    <Video size={16} className="text-red-500" /> View Live Stream link
-                  </a>
-                  <p className="text-center text-stone-500 text-[10px] mt-2">The stream will go active on the event day.</p>
-                </div>
+                    Share Ticket
+                  </button>
+                )}
+                
+                <a 
+                  href="https://youtube.com/live/some-private-link" 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-2 w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3 rounded-xl transition-colors font-medium text-xs"
+                >
+                  <Video size={14} className="text-red-500" /> Virtual Pass Access
+                </a>
               </div>
               
               <button 
                 onClick={onClose}
-                className="text-stone-400 hover:text-white text-xs uppercase tracking-widest font-bold transition-colors"
+                className="mt-6 text-stone-500 hover:text-white text-[10px] uppercase tracking-widest font-bold transition-colors"
               >
                 Close Window
               </button>
