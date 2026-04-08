@@ -479,7 +479,7 @@ const Hero = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="text-6xl sm:text-7xl md:text-9xl font-serif text-white mb-10 leading-[0.95] tracking-tighter"
+          className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-serif text-white mb-8 sm:mb-10 leading-[0.95] tracking-tighter"
         >
           A Voice of <br />
           <span className="italic text-gold-400 gold-glow">Hope</span> & <span className="font-sans font-extralight opacity-80 text-gold-100">Healing</span>
@@ -893,7 +893,7 @@ const AlbumLaunchAdvert = ({ onBuyTicket, onDonateClick }: { onBuyTicket: () => 
             <span className="inline-block px-4 py-1.5 rounded-full bg-gold-600/10 border border-gold-600/20 text-gold-500 font-black text-[10px] uppercase tracking-[0.3em] mb-8 shimmer">
               The Grand Launch
             </span>
-            <h2 className="text-5xl sm:text-7xl md:text-8xl font-serif text-white mb-8 leading-[0.9] tracking-tighter">
+            <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-serif text-white mb-6 sm:mb-8 leading-[0.9] tracking-tighter">
               A New Chapter <br />
               <span className="text-gradient italic text-gold-500">of Grace</span>
             </h2>
@@ -962,13 +962,13 @@ const AlbumLaunchAdvert = ({ onBuyTicket, onDonateClick }: { onBuyTicket: () => 
             <div className="relative group rotate-y-12 hover:rotate-y-0 transition-all duration-1000">
               {/* CD Case Mockup Effect */}
               <div className="absolute -inset-4 bg-gradient-to-tr from-white/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/10 float-animation">
+              <div className="relative aspect-[3/4] sm:aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/20 group-hover:border-gold-500 transition-all duration-700 bg-stone-900 group">
                 <img 
                   src={adImage} 
                   alt="Official Event Advert" 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000"
+                  className="w-full h-full object-contain group-hover:scale-[1.03] transition-all duration-1000 z-10"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent"></div>
+                <div className="absolute inset-0 bg-stone-950/20 group-hover:bg-transparent transition-colors duration-700" />
               </div>
               
               {/* Floating Badge */}
@@ -1071,9 +1071,13 @@ const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: 
         onClick={e => e.stopPropagation()}
       >
         {/* Background Image Layer */}
-        <div className="absolute inset-0">
-          <img src={adImage} alt="Minister James Album Launch" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/90 to-transparent" />
+        <div className="absolute inset-0 bg-stone-950">
+          <img 
+            src={adImage} 
+            alt="Minister James Album Launch" 
+            className="w-full h-full object-contain opacity-60 group-hover:opacity-100 transition-all duration-700 scale-110" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
         </div>
 
         {/* Glowing orbs */}
@@ -1104,12 +1108,12 @@ const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: 
               </span>
             </motion.div>
 
-            <h2 className="text-5xl sm:text-6xl font-serif text-white mb-4 leading-[0.85] tracking-tighter">
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-white mb-3 sm:mb-4 leading-[0.85] tracking-tighter">
               The <span className="text-gradient">Sound</span> <br />
               of Liberation
             </h2>
             
-            <p className="text-stone-300 text-sm mb-10 leading-relaxed font-medium max-w-[280px]">
+            <p className="text-stone-300 text-[13px] sm:text-sm mb-6 sm:mb-10 leading-relaxed font-medium max-w-[280px]">
               Join <span className="text-white font-bold tracking-widest text-[10px] uppercase">Minister James</span> for the most anticipated album launch of 2026.
               <span className="block mt-4 text-gold-400 text-[10px] font-black uppercase tracking-widest">
                 <MapPin size={10} className="inline mr-1" /> Obot Eyo, Odukpani LGA
@@ -1117,7 +1121,7 @@ const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: 
             </p>
 
             {/* Premium Countdown */}
-            <div className="grid grid-cols-4 gap-3 mb-10">
+            <div className="grid grid-cols-4 gap-2 sm:gap-3 mb-8 sm:mb-10">
               {[
                 { label: 'Days', value: timeLeft.days },
                 { label: 'Hrs', value: timeLeft.hours },
@@ -1125,8 +1129,8 @@ const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: 
                 { label: 'Sec', value: timeLeft.seconds },
               ].map((item) => (
                 <div key={item.label} className="text-center group/item">
-                  <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl py-4 mb-2 group-hover/item:border-gold-500/50 transition-colors">
-                    <span className="text-2xl sm:text-3xl font-serif text-white drop-shadow-md">
+                  <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-xl sm:rounded-2xl py-3 sm:py-4 mb-1 sm:mb-2 group-hover/item:border-gold-500/50 transition-colors">
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-serif text-white">
                       {String(item.value).padStart(2, '0')}
                     </span>
                   </div>

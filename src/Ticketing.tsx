@@ -99,7 +99,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
           <X size={16} />
         </button>
 
-        <div className="relative z-10 p-8">
+        <div className="relative z-10 p-6 sm:p-8">
           {!isSuccess ? (
             <>
               <div className="mb-6">
@@ -338,7 +338,7 @@ export const DonateModal = ({ onClose }: { onClose: () => void }) => {
           <X size={16} />
         </button>
 
-        <div className="relative z-10 p-8">
+        <div className="relative z-10 p-6 sm:p-8">
           {!isSuccess ? (
             <>
               <div className="mb-6 text-center">
