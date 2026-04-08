@@ -30,8 +30,9 @@ import {
 import { db, auth, handleFirestoreError, OperationType, googleProvider } from './firebase';
 import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, deleteDoc, doc, Timestamp } from 'firebase/firestore';
 import { onAuthStateChanged, signInAnonymously, signInWithPopup, signOut } from 'firebase/auth';
-// Image path from public folder
+// Assets from public folder
 const princeJamesImage = '/pj.jpeg';
+const adImage = '/ad.png';
 import { TicketModal, DonateModal } from './Ticketing';
 
 
@@ -963,15 +964,11 @@ const AlbumLaunchAdvert = ({ onBuyTicket, onDonateClick }: { onBuyTicket: () => 
               <div className="absolute -inset-4 bg-gradient-to-tr from-white/10 to-transparent rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <div className="relative aspect-square rounded-[2rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] border border-white/10 float-animation">
                 <img 
-                  src={princeJamesImage} 
-                  alt="Album Cover" 
-                  className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700"
+                  src={adImage} 
+                  alt="Official Event Advert" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-all duration-1000"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent"></div>
-                <div className="absolute bottom-10 left-10">
-                  <p className="text-white font-serif text-3xl mb-1">Minister James</p>
-                  <p className="text-gold-500 font-black text-[10px] uppercase tracking-[0.4em]">Self Titled Evolution</p>
-                </div>
               </div>
               
               {/* Floating Badge */}
@@ -1075,8 +1072,8 @@ const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: 
       >
         {/* Background Image Layer */}
         <div className="absolute inset-0">
-          <img src={princeJamesImage} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/80 to-stone-950/40" />
+          <img src={adImage} alt="Minister James Album Launch" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/90 to-transparent" />
         </div>
 
         {/* Glowing orbs */}
@@ -1092,64 +1089,74 @@ const PopoutAd = ({ onClose, onBuyTicket }: { onClose: () => void, onBuyTicket: 
           <X size={16} />
         </button>
 
-        {/* Content */}
-        <div className="relative z-10 p-8 pt-12">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-gold-600/20 border border-gold-500/30 rounded-full px-4 py-1.5 mb-6">
-            <span className="w-2 h-2 bg-gold-400 rounded-full animate-ping" />
-            <span className="text-gold-400 font-black text-[10px] uppercase tracking-[0.3em]">
-              Live Event — April 26, 2026
-            </span>
-          </div>
+          {/* Content */}
+          <div className="relative z-10 p-8 pt-12">
+            {/* Animated Badge */}
+            <motion.div 
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-gold-600 to-gold-400 rounded-full px-4 py-1.5 mb-6 shadow-lg shadow-gold-500/20"
+            >
+              <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+              <span className="text-white font-black text-[10px] uppercase tracking-[0.3em] drop-shadow-sm">
+                Official Event Invitation
+              </span>
+            </motion.div>
 
-          <h2 className="text-4xl sm:text-5xl font-serif text-white mb-2 leading-tight">
-            New Album<br />
-            <span className="text-gold-400 italic">Launching</span> Soon
-          </h2>
-          <p className="text-stone-400 text-sm mb-8 leading-relaxed">
-            Obot Eyo, Odukpani LGA · Cross River State, Nigeria<br />
-            Join Minister James for a night of powerful worship &amp; celebration.
-          </p>
+            <h2 className="text-5xl sm:text-6xl font-serif text-white mb-4 leading-[0.85] tracking-tighter">
+              The <span className="text-gradient">Sound</span> <br />
+              of Liberation
+            </h2>
+            
+            <p className="text-stone-300 text-sm mb-10 leading-relaxed font-medium max-w-[280px]">
+              Join <span className="text-white font-bold tracking-widest text-[10px] uppercase">Minister James</span> for the most anticipated album launch of 2026.
+              <span className="block mt-4 text-gold-400 text-[10px] font-black uppercase tracking-widest">
+                <MapPin size={10} className="inline mr-1" /> Obot Eyo, Odukpani LGA
+              </span>
+            </p>
 
-          {/* Countdown */}
-          <div className="grid grid-cols-4 gap-2 mb-8">
-            {[
-              { label: 'Days', value: timeLeft.days },
-              { label: 'Hrs',  value: timeLeft.hours },
-              { label: 'Min',  value: timeLeft.minutes },
-              { label: 'Sec',  value: timeLeft.seconds },
-            ].map(item => (
-              <div key={item.label} className="text-center">
-                <div className="bg-white/5 border border-white/10 rounded-xl py-3 mb-1.5">
-                  <span className="text-2xl font-serif text-gold-400 tabular-nums">
-                    {String(item.value).padStart(2, '0')}
+            {/* Premium Countdown */}
+            <div className="grid grid-cols-4 gap-3 mb-10">
+              {[
+                { label: 'Days', value: timeLeft.days },
+                { label: 'Hrs', value: timeLeft.hours },
+                { label: 'Min', value: timeLeft.minutes },
+                { label: 'Sec', value: timeLeft.seconds },
+              ].map((item) => (
+                <div key={item.label} className="text-center group/item">
+                  <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl py-4 mb-2 group-hover/item:border-gold-500/50 transition-colors">
+                    <span className="text-2xl sm:text-3xl font-serif text-white drop-shadow-md">
+                      {String(item.value).padStart(2, '0')}
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-stone-500 group-hover/item:text-gold-500 transition-colors">
+                    {item.label}
                   </span>
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-stone-500">
-                  {item.label}
-                </span>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* CTA Container */}
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => {
+                  onClose();
+                  onBuyTicket();
+                }}
+                className="gold-button w-full bg-white text-stone-950 py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all hover:bg-gold-500 hover:text-white group"
+              >
+                Claim Your Seat Now
+              </button>
+              
+              <button
+                onClick={onClose}
+                className="w-full text-stone-500 text-[10px] uppercase tracking-widest font-black py-2 hover:text-stone-300 transition-colors"
+              >
+                Maybe Later
+              </button>
+            </div>
           </div>
-
-          {/* CTA */}
-          <button
-            onClick={() => {
-              onClose();
-              onBuyTicket();
-            }}
-            className="gold-button block w-full text-center bg-gold-600 hover:bg-gold-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-gold-900/30 transition-all hover:-translate-y-1"
-          >
-            Book Your Spot Now
-          </button>
-
-          <button
-            onClick={onClose}
-            className="block w-full text-center text-stone-600 text-xs mt-4 hover:text-stone-400 transition-colors"
-          >
-            Remind me later
-          </button>
-        </div>
       </motion.div>
     </motion.div>
   );
