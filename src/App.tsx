@@ -275,7 +275,7 @@ const AdminDashboard = ({ onLogout, onBack }: { onLogout: () => void, onBack: ()
                           {(ticket as any).ticketType || 'Standard'}
                         </span>
                       </div>
-                      <p className="text-xs text-stone-400">{ticket.email}</p>
+                      <p className="text-xs text-stone-400">{(ticket as any).email || (ticket as any).phone}</p>
                     </div>
                   </div>
                   <div className="text-right">

@@ -10,7 +10,8 @@ import { useRef, useMemo } from 'react';
 
 export const TicketModal = ({ onClose }: { onClose: () => void }) => {
   const [ticketType, setTicketType] = useState<'regular' | 'vip'>('regular');
-  const [email, setEmail] = useState('');
+  const [contactMethod, setContactMethod] = useState<'email' | 'phone'>('email');
+  const [contactValue, setContactValue] = useState('');
   const [name, setName] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
   const [ticketId, setTicketId] = useState('');
@@ -48,7 +49,8 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
     try {
       const docRef = await addDoc(collection(db, 'tickets'), {
         name,
-        email,
+        contactMethod,
+        [contactMethod]: contactValue,
         amount: prices[ticketType],
         ticketType,
         reference: reference.reference,
@@ -63,22 +65,26 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
+  const paystackEmail = contactMethod === 'email' ? contactValue : `${contactValue}@ministerjames.com`;
+
   const handlePaystackCloseAction = () => {
     console.log('Payment modal closed');
   };
 
   const componentProps = useMemo(() => ({
-    email,
+    email: paystackEmail,
     amount,
     metadata: {
       name,
+      contactMethod,
+      [contactMethod]: contactValue,
       custom_fields: []
     },
     publicKey,
     text: `Pay ₦${prices[ticketType]} & Get ${ticketType.toUpperCase()} Ticket`,
     onSuccess: (reference: any) => handlePaystackSuccessAction(reference),
     onClose: handlePaystackCloseAction,
-  }), [email, name, publicKey, ticketType]);
+  }), [paystackEmail, name, publicKey, ticketType, contactMethod, contactValue]);
 
   return (
     <motion.div
@@ -149,14 +155,29 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-black text-stone-500 uppercase tracking-widest block mb-2">Email Address</label>
+                  <label className="text-[10px] font-black text-stone-500 uppercase tracking-widest block mb-3">Preferred Contact Method</label>
+                  <div className="flex p-1 bg-stone-950 border border-stone-800 rounded-xl mb-4">
+                    <button
+                      onClick={() => { setContactMethod('email'); setContactValue(''); }}
+                      className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${contactMethod === 'email' ? 'bg-stone-800 text-white' : 'text-stone-500'}`}
+                    >
+                      Email
+                    </button>
+                    <button
+                      onClick={() => { setContactMethod('phone'); setContactValue(''); }}
+                      className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${contactMethod === 'phone' ? 'bg-stone-800 text-white' : 'text-stone-500'}`}
+                    >
+                      Phone Number
+                    </button>
+                  </div>
+                  
                   <input
-                    type="email"
+                    type={contactMethod === 'email' ? 'email' : 'tel'}
                     required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    value={contactValue}
+                    onChange={(e) => setContactValue(e.target.value)}
                     className="w-full bg-stone-950/50 border border-stone-800 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-gold-500 transition-colors"
-                    placeholder="Enter your email"
+                    placeholder={contactMethod === 'email' ? "Enter your email" : "Enter phone number"}
                   />
                 </div>
               </div>
@@ -168,7 +189,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
               ) : (
                 <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-gold-600 to-gold-400 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-                  <div className={`relative ${(!name || !email) ? 'opacity-50 pointer-events-none' : ''}`}>
+                  <div className={`relative ${(!name || !contactValue) ? 'opacity-50 pointer-events-none' : ''}`}>
                     <PaystackButton
                       {...componentProps}
                       className="w-full bg-gold-600 text-white font-black text-xs uppercase tracking-widest py-4 rounded-xl shadow-xl transition-transform active:scale-[0.98]"
@@ -199,7 +220,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                       <p className="text-stone-400 text-[10px] mt-1 italic">Album Launching 2026</p>
                     </div>
                     <div className="bg-white/5 p-2 rounded-xl backdrop-blur-sm border border-white/10">
-                      <QRCodeSVG value={`TICKET-${ticketId}-${email}`} size={50} bgColor="white" fgColor="black" />
+                      <QRCodeSVG value={`TICKET-${ticketId}-${contactValue}`} size={50} bgColor="white" fgColor="black" />
                     </div>
                   </div>
 
