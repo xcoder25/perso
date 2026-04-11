@@ -265,7 +265,16 @@ const AdminDashboard = ({ onLogout, onBack }: { onLogout: () => void, onBack: ()
                       {ticket.name.charAt(0)}
                     </div>
                     <div>
-                      <h4 className="font-bold text-stone-900">{ticket.name}</h4>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-stone-900">{ticket.name}</h4>
+                        <span className={`text-[8px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest ${
+                          (ticket as any).ticketType === 'vip' 
+                            ? 'bg-gold-500 text-white shadow-sm' 
+                            : 'bg-stone-100 text-stone-500 border border-stone-200'
+                        }`}>
+                          {(ticket as any).ticketType || 'Standard'}
+                        </span>
+                      </div>
                       <p className="text-xs text-stone-400">{ticket.email}</p>
                     </div>
                   </div>

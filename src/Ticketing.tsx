@@ -9,6 +9,7 @@ import { toPng } from 'html-to-image';
 import { useRef, useMemo } from 'react';
 
 export const TicketModal = ({ onClose }: { onClose: () => void }) => {
+  const [ticketType, setTicketType] = useState<'regular' | 'vip'>('regular');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isSuccess, setIsSuccess] = useState(false);
@@ -21,7 +22,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
     try {
       const dataUrl = await toPng(ticketRef.current, { cacheBust: true, backgroundColor: '#0c0a09' });
       const link = document.createElement('a');
-      link.download = `minister-james-ticket-${ticketId}.png`;
+      link.download = `minister-james-${ticketType}-ticket-${ticketId}.png`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -31,7 +32,11 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
 
   // Fallback public key for testing since user hasn't provided one
   const publicKey = (import.meta as any).env?.VITE_PAYSTACK_PUBLIC_KEY || "pk_test_b867c2eefe42df8763ac73c1dcc73468bfbdf8a1";
-  const amount = 100 * 100; // 100 NGN in kobo
+  const prices = {
+    regular: 200,
+    vip: 500
+  };
+  const amount = prices[ticketType] * 100; // In kobo
 
   const handlePaystackSuccessAction = async (reference: any) => {
     // Show success UI immediately for better UX
@@ -44,7 +49,8 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
       const docRef = await addDoc(collection(db, 'tickets'), {
         name,
         email,
-        amount: 100,
+        amount: prices[ticketType],
+        ticketType,
         reference: reference.reference,
         status: 'paid',
         createdAt: serverTimestamp()
@@ -69,10 +75,10 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
       custom_fields: []
     },
     publicKey,
-    text: "Pay ₦100 & Get Ticket",
+    text: `Pay ₦${prices[ticketType]} & Get ${ticketType.toUpperCase()} Ticket`,
     onSuccess: (reference: any) => handlePaystackSuccessAction(reference),
     onClose: handlePaystackCloseAction,
-  }), [email, name, publicKey]);
+  }), [email, name, publicKey, ticketType]);
 
   return (
     <motion.div
@@ -107,7 +113,27 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                   Exclusive Access
                 </span>
                 <h3 className="text-2xl font-serif text-white mt-4 mb-2">Get Your Ticket</h3>
-                <p className="text-stone-400 text-sm">Valid for both in-person attendance at Obot Eyo, Odukpani LGA and the exclusive live stream. Price: ₦100</p>
+                <p className="text-stone-400 text-sm">Valid for both in-person attendance at Obot Eyo and exclusive live stream.</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <button
+                  onClick={() => setTicketType('regular')}
+                  className={`p-4 rounded-2xl border-2 transition-all text-left ${ticketType === 'regular' ? 'border-gold-500 bg-gold-500/10' : 'border-stone-800 bg-stone-900/50'}`}
+                >
+                  <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${ticketType === 'regular' ? 'text-gold-500' : 'text-stone-500'}`}>Regular</p>
+                  <p className="text-white font-bold text-lg">₦200</p>
+                </button>
+                <button
+                  onClick={() => setTicketType('vip')}
+                  className={`p-4 rounded-2xl border-2 transition-all text-left ${ticketType === 'vip' ? 'border-gold-500 bg-gold-500/10' : 'border-stone-800 bg-stone-900/50'}`}
+                >
+                  <div className="flex justify-between items-start">
+                    <p className={`text-[10px] font-black uppercase tracking-widest mb-1 ${ticketType === 'vip' ? 'text-gold-500' : 'text-stone-500'}`}>VIP Access</p>
+                    <Key size={12} className={ticketType === 'vip' ? 'text-gold-500' : 'text-stone-500'} />
+                  </div>
+                  <p className="text-white font-bold text-lg">₦500</p>
+                </button>
               </div>
 
               <div className="space-y-4 mb-8">
@@ -207,7 +233,7 @@ export const TicketModal = ({ onClose }: { onClose: () => void }) => {
                       <div className="w-px h-6 bg-stone-200" />
                       <div className="text-right">
                         <p className="text-[8px] font-black uppercase tracking-widest text-stone-400 mb-0.5">Access</p>
-                        <p className="text-stone-800 text-xs font-bold">All Areas</p>
+                        <p className="text-stone-800 text-xs font-bold">{ticketType === 'vip' ? 'VIP - All Areas' : 'General Admission'}</p>
                       </div>
                     </div>
                   </div>
